@@ -6,9 +6,7 @@ const router = express.Router();
 
 router.get("/", restContacts.listContacts);
 
-router.get("/:contactId", async (req, res, next) => {
-  res.json({ message: "template message" });
-});
+router.get("/:contactId", restContacts.getContactById);
 
 router.post("/", async (req, res, next) => {
   res.json({ message: "template message" });
