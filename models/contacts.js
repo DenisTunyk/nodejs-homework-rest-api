@@ -1,52 +1,64 @@
-const fs = require("fs/promises");
+const fs = require("fs").promises;
 const path = require("path");
+const { nanoid } = require("nanoid");
 
 const contactsPath = path.join(__dirname, "contacts.json");
 
-async function givelistContacts() {
-  try {
-    const data = await fs.readFile(contactsPath, "utf8");
-    return JSON.parse(data);
-  } catch (err) {
-    console.log(err);
-  }
+async function getAll() {
+  const data = await fs.readFile(contactsPath, "utf8");
+  return JSON.parse(data);
 }
 
-const listContacts = async (req, res, next) => {
-  try {
-    const data = await fs.readFile(contactsPath, "utf8");
-    return res.json(JSON.parse(data));
-  } catch {
-    const err = new Error("Not found this file");
-    next(err);
+function updateContacts(contacts) {
+  return fs.writeFile(contactsPath, JSON.stringify(contacts), "utf8");
+}
+
+async function getById(id) {
+  const contacts = await getAll();
+
+  const contact = contacts.find((contact) => contact.id === id);
+
+  return contact || null;
+}
+
+async function add(data) {
+  const newContact = {
+    id: nanoid(21),
+    ...data,
+  };
+  const contacts = await getAll();
+  contacts.push(newContact);
+  await updateContacts(contacts);
+  return newContact;
+}
+
+async function remove(id) {
+  const contacts = await getAll();
+  console.log();
+  const index = contacts.findIndex((item) => item.id === id);
+  if (index === -1) {
+    return null;
   }
-};
+  const [result] = contacts.splice(index, 1);
+  updateContacts(contacts);
+  return result;
+}
 
-const getContactById = async (req, res, next) => {
-  try {
-    const contacts = await givelistContacts();
-    console.log(req.params.contactId);
-    //console.log(contacts);
-    // const contact = contacts.find(
-    //   (contact) => contact.id === req.params.contactId
-    // );
-    res.json(JSON.parse(contacts));
-  } catch {
-    const err = new Error("Contacts is not defind");
-    next(err);
+async function updateById(id, body) {
+  const contacts = await getAll();
+  const index = contacts.findIndex((item) => item.id === id);
+  if (index === -1) {
+    return null;
   }
-};
-
-const removeContact = async (contactId) => {};
-
-const addContact = async (body) => {};
-
-const updateContact = async (contactId, body) => {};
+  contacts[index] = { id, ...body };
+  updateContacts(contacts);
+  return contacts[index];
+}
 
 module.exports = {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
+  add,
+  getById,
+  remove,
+  getAll,
+  updateById,
 };
