@@ -50,26 +50,6 @@ async function updateById(id, body) {
   if (index === -1) {
     return null;
   }
-  // const name = "";
-  // const email = "";
-  // const phone = "";
-
-  // if (typeof body.name === "undefined") {
-  //   name = contacts[index].name;
-  // } else {
-  //   name = body.name;
-  // }
-  // if (typeof body.email === "undefined") {
-  //   email = contacts[index].email;
-  // } else {
-  //   email = body.email;
-  // }
-  // if (typeof body.phone === "undefined") {
-  //   phone = contacts[index].phone;
-  // } else {
-  //   phone = body.phone;
-  // }
-  console.log("name");
 
   contacts[index] = { ...contacts[index], ...body };
   updateContacts(contacts);
