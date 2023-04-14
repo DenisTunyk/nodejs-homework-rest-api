@@ -10,7 +10,9 @@ const { validateBody } = require("../../middleware/");
 
 const schema = require("../../schemas/contacts");
 
-router.get("/:contactId", ctrl.getContactById);
+router.get("/", ctrl.listContacts);
+
+router.get("/:id", ctrl.getContactById);
 
 router.post(
   "/",
@@ -19,13 +21,8 @@ router.post(
   ctrl.addContact
 );
 
-router.delete("/:contactId", ctrl.removeContact);
+router.delete("/:id", ctrl.removeContact);
 
-router.put(
-  "/:contactId",
-  express.json(),
-  validateBody(schema.addSchema),
-  ctrl.updateContact
-);
+router.put("/:id", express.json(), ctrl.updateContact);
 
 module.exports = router;
