@@ -1,15 +1,10 @@
 const { Contact } = require("./../models/contact");
 
-// const fs = require("fs/promises");
-// const path = require("path");
-// const { nanoid } = require("nanoid");
-
 const { HttpError, ctrlWrapper } = require("../helpers");
 
-//const contacts = require("../models/contacts");
-
 const listContacts = async (req, res) => {
-  const result = await Contact.find();
+  const { _id: owner } = req.user;
+  const result = await Contact.find({ owner }, "-createAt -updateAt");
   console.log(result);
   res.json(result);
 };
@@ -24,7 +19,8 @@ const getContactById = async (req, res) => {
 };
 
 const addContact = async (req, res) => {
-  const result = await Contact.create(req.body);
+  const { _id: owner } = req.user;
+  const result = await Contact.create({ ...req.body, owner });
   res.status(201).json(result);
 };
 
